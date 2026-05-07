@@ -6,62 +6,58 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kalkulator TBO - ST 240/2023</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
-        .card { @apply bg-white p-4 md:p-6 rounded-xl shadow-md border border-gray-100; }
+        .card { @apply bg-white p-6 rounded-xl shadow-md border border-gray-100; }
         .input-group { @apply mb-4; }
         .label { @apply block text-sm font-semibold text-gray-700 mb-1; }
         .input { @apply w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none; }
         .status-sah { @apply bg-green-100 text-green-800 border-green-200; }
         .status-batal { @apply bg-red-100 text-red-800 border-red-200; }
-        @media print {
-            .no-print { display: none; }
-            .card { box-shadow: none; border: 1px solid #ddd; }
-        }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen pb-20">
 
-    <nav class="bg-blue-800 text-white p-4 shadow-lg sticky top-0 z-50 no-print">
+    <nav class="bg-blue-800 text-white p-4 shadow-lg sticky top-0 z-50">
         <div class="max-w-4xl mx-auto flex justify-between items-center">
             <div class="flex items-center space-x-2">
-                <h1 class="text-xl font-bold uppercase tracking-tight">Tools Penera Sidoarjo</h1>
+                <div class="bg-white p-1 rounded">
+                    <svg class="w-6 h-6 text-blue-800" fill="currentColor" viewBox="0 0 20 20"><path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"></path></svg>
+                </div>
+                <h1 class="text-xl font-bold uppercase tracking-tight">Kalkulator BKD TBO</h1>
             </div>
-            <div class="text-right">
-                <p class="text-[10px] opacity-75">Sesuai ST 240/2023</p>
-                <p class="text-xs font-bold">Adib Nur Ikhwan</p>
-            </div>
+            <span class="text-xs opacity-80 text-right font-medium">Penera: Adib Nur Ikhwan</span>
         </div>
     </nav>
 
-    <div id="capture-area" class="max-w-4xl mx-auto p-4 space-y-6">
+    <main class="max-w-4xl mx-auto p-4 space-y-6">
         
-        <!-- Header Laporan (Hanya muncul saat print/save) -->
-        <div class="hidden print:block text-center border-b-2 border-black pb-4 mb-6">
-            <h2 class="text-xl font-bold">LAPORAN HASIL PENGUJIAN TBO</h2>
-            <p>Metrologi Legal Kabupaten Sidoarjo</p>
-        </div>
-
-        <!-- Section 1: Spesifikasi -->
+        <!-- Section 1: Identitas & Spesifikasi -->
         <section class="card">
             <h2 class="text-lg font-bold mb-4 text-blue-900 flex items-center">
-                Spesifikasi Alat
+                <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                Spesifikasi Metrologis
             </h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div class="input-group">
                     <label class="label">Kapasitas Maksimum (Max)</label>
-                    <input type="number" id="maxCap" class="input" placeholder="Misal: 30" oninput="calculate()">
+                    <div class="relative">
+                        <input type="number" id="maxCap" class="input pr-10" placeholder="Contoh: 30" oninput="calculate()">
+                        <span class="absolute right-3 top-2 text-gray-400 text-sm">kg/g</span>
+                    </div>
                 </div>
                 <div class="input-group">
                     <label class="label">Interval Verifikasi (e)</label>
-                    <input type="number" id="eVal" class="input" placeholder="Misal: 0.01" step="0.000001" oninput="calculate()">
+                    <div class="relative">
+                        <input type="number" id="eVal" class="input pr-10" placeholder="Contoh: 0.01" step="0.000001" oninput="calculate()">
+                        <span class="absolute right-3 top-2 text-gray-400 text-sm">kg/g</span>
+                    </div>
                 </div>
                 <div class="input-group">
                     <label class="label">Jenis Kegiatan</label>
                     <select id="kegiatan" class="input" onchange="calculate()">
-                        <option value="tera">Tera</option>
+                        <option value="tera">Tera (Baru/Pindah)</option>
                         <option value="tera_ulang">Tera Ulang</option>
                     </select>
                 </div>
@@ -70,19 +66,19 @@
             <div id="classResult" class="mt-4 p-4 rounded-xl bg-blue-50 border border-blue-200 hidden">
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
                     <div>
-                        <p class="text-[10px] text-blue-600 font-bold uppercase">n (Max/e)</p>
+                        <p class="text-[10px] text-blue-600 font-bold uppercase">Jumlah n (Max/e)</p>
                         <p id="nValue" class="text-xl font-bold text-blue-900">-</p>
                     </div>
                     <div>
-                        <p class="text-[10px] text-blue-600 font-bold uppercase">Kelas</p>
+                        <p class="text-[10px] text-blue-600 font-bold uppercase">Kelas Akurasi</p>
                         <p id="tboClass" class="text-xl font-bold text-blue-900">-</p>
                     </div>
                     <div>
-                        <p class="text-[10px] text-blue-600 font-bold uppercase">Min</p>
+                        <p class="text-[10px] text-blue-600 font-bold uppercase">Min Load (Min)</p>
                         <p id="minLoad" class="text-xl font-bold text-blue-900">-</p>
                     </div>
                     <div>
-                        <p class="text-[10px] text-blue-600 font-bold uppercase">Status ST</p>
+                        <p class="text-[10px] text-blue-600 font-bold uppercase">Status Kelas</p>
                         <p id="spekStatus" class="text-sm font-bold">-</p>
                     </div>
                 </div>
@@ -91,66 +87,82 @@
 
         <!-- Section 2: Tabel BKD -->
         <section class="card overflow-hidden">
-            <h2 class="text-lg font-bold mb-4 text-blue-900">Penentuan BKD (Tabel 4.7)</h2>
-            <div class="overflow-x-auto -mx-4 md:-mx-6">
-                <table class="w-full text-xs md:text-sm text-left border-collapse">
+            <h2 class="text-lg font-bold mb-4 text-blue-900 flex items-center">
+                <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                Tabel BKD (Sesuai Tabel 4.7 ST)
+            </h2>
+            <div class="overflow-x-auto -mx-6">
+                <table class="w-full text-sm text-left border-collapse">
                     <thead>
-                        <tr class="bg-gray-100">
-                            <th class="p-3 pl-6 border">Rentang Muatan (m)</th>
-                            <th class="p-3 border text-center">BKD (e)</th>
-                            <th class="p-3 pr-6 border text-right">BKD (Satuan)</th>
+                        <tr class="bg-blue-900 text-white">
+                            <th class="p-3 pl-6 border-b border-blue-800">Rentang Muatan (m) dalam Satuan Massa</th>
+                            <th class="p-3 border-b border-blue-800 text-center">BKD (e)</th>
+                            <th class="p-3 pr-6 border-b border-blue-800 text-right">BKD (Satuan Massa)</th>
                         </tr>
                     </thead>
                     <tbody id="bkdTableBody">
-                        <tr><td colspan="3" class="p-8 text-center text-gray-400 italic">Data belum lengkap.</td></tr>
+                        <tr><td colspan="3" class="p-8 text-center text-gray-400 italic">Lengkapi data Max dan e untuk kalkulasi BKD</td></tr>
                     </tbody>
                 </table>
             </div>
+            <p id="bkdNote" class="mt-3 text-[11px] text-gray-500 italic hidden">
+                *BKD Tera Ulang adalah 2x BKD Tera sesuai ketentuan ST.
+            </p>
         </section>
 
-        <!-- Section 3: Checklist -->
-        <section class="card no-print">
-            <h2 class="text-lg font-bold mb-4 text-blue-900">Checklist Hasil Pengujian</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Section 3: Checklist Hasil Uji -->
+        <section class="card">
+            <h2 class="text-lg font-bold mb-4 text-blue-900 flex items-center">
+                <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                Checklist Pengujian
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="space-y-2">
-                    <label class="flex items-center space-x-3 p-2 bg-gray-50 rounded cursor-pointer">
-                        <input type="checkbox" class="uji-check w-5 h-5" onchange="updateDecision()">
-                        <span class="text-sm">Administrasi & Izin Tipe</span>
+                    <p class="font-bold text-xs text-gray-500 uppercase tracking-wider mb-2 border-l-4 border-blue-600 pl-2">I. Administratif & Fisik</p>
+                    <label class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors border border-transparent hover:border-gray-200">
+                        <input type="checkbox" class="uji-check mt-1 w-5 h-5 rounded text-blue-600" onchange="updateDecision()">
+                        <span class="text-sm text-gray-700 font-medium">Izin Tipe / Tanda Kesesuaian Tipe Sesuai</span>
                     </label>
-                    <label class="flex items-center space-x-3 p-2 bg-gray-50 rounded cursor-pointer">
-                        <input type="checkbox" class="uji-check w-5 h-5" onchange="updateDecision()">
-                        <span class="text-sm">Pemeriksaan Fisik / Label</span>
+                    <label class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors border border-transparent hover:border-gray-200">
+                        <input type="checkbox" class="uji-check mt-1 w-5 h-5 rounded text-blue-600" onchange="updateDecision()">
+                        <span class="text-sm text-gray-700 font-medium">Identitas (Merk, Model, Max, Min, e) Jelas</span>
+                    </label>
+                    <label class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors border border-transparent hover:border-gray-200">
+                        <input type="checkbox" class="uji-check mt-1 w-5 h-5 rounded text-blue-600" onchange="updateDecision()">
+                        <span class="text-sm text-gray-700 font-medium">Perangkat Penyetel Nol Berfungsi Baik</span>
                     </label>
                 </div>
+
                 <div class="space-y-2">
-                    <label class="flex items-center space-x-3 p-2 bg-gray-50 rounded cursor-pointer">
-                        <input type="checkbox" class="uji-check w-5 h-5" onchange="updateDecision()">
-                        <span class="text-sm">Uji Kebenaran & Sudut</span>
+                    <p class="font-bold text-xs text-gray-500 uppercase tracking-wider mb-2 border-l-4 border-blue-600 pl-2">II. Kinerja Metrologis</p>
+                    <label class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors border border-transparent hover:border-gray-200">
+                        <input type="checkbox" class="uji-check mt-1 w-5 h-5 rounded text-blue-600" onchange="updateDecision()">
+                        <span class="text-sm text-gray-700 font-medium">Uji Kebenaran (Semua Titik Lulus BKD)</span>
                     </label>
-                    <label class="flex items-center space-x-3 p-2 bg-gray-50 rounded cursor-pointer">
-                        <input type="checkbox" class="uji-check w-5 h-5" onchange="updateDecision()">
-                        <span class="text-sm">Uji Repeatability</span>
+                    <label class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors border border-transparent hover:border-gray-200">
+                        <input type="checkbox" class="uji-check mt-1 w-5 h-5 rounded text-blue-600" onchange="updateDecision()">
+                        <span class="text-sm text-gray-700 font-medium">Uji Eksentrisitas (Uji Sudut Lulus)</span>
+                    </label>
+                    <label class="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors border border-transparent hover:border-gray-200">
+                        <input type="checkbox" class="uji-check mt-1 w-5 h-5 rounded text-blue-600" onchange="updateDecision()">
+                        <span class="text-sm text-gray-700 font-medium">Uji Kemampuan Ulang (Repeatability)</span>
                     </label>
                 </div>
             </div>
         </section>
 
         <!-- Decision Box -->
-        <div id="decisionBox" class="card border-2 text-center status-batal">
+        <div id="decisionBox" class="card border-2 text-center transition-all duration-500 status-batal">
+            <p class="text-sm font-semibold uppercase tracking-widest mb-1">Status Kelayakan</p>
             <h3 id="decisionText" class="text-4xl font-black">BATAL</h3>
-            <p id="decisionNote" class="text-xs mt-2 italic text-gray-600">Lengkapi data dan centang pengujian.</p>
+            <p id="decisionNote" class="text-xs mt-2 italic text-gray-600">Pastikan spesifikasi sesuai ST dan semua pengujian dicentang LULUS.</p>
         </div>
 
-        <div class="grid grid-cols-2 gap-4 no-print">
-            <button onclick="window.print()" class="bg-blue-600 text-white font-bold py-3 rounded-lg shadow-md hover:bg-blue-700">
-                Cetak Laporan
-            </button>
-            <button onclick="saveAsImage()" class="bg-green-600 text-white font-bold py-3 rounded-lg shadow-md hover:bg-green-700">
-                Simpan Gambar
-            </button>
-        </div>
+    </main>
 
-    </div>
+    <footer class="fixed bottom-0 w-full bg-white border-t p-3 text-center text-[10px] text-gray-400">
+        Referensi: Lampiran Keputusan Direktur Jenderal PKTN Nomor 240 Tahun 2023 tentang Syarat Teknis Timbangan Bukan Otomatis
+    </footer>
 
     <script>
         function calculate() {
@@ -161,6 +173,8 @@
             
             if (!max || !e || max <= 0 || e <= 0) {
                 resDiv.classList.add('hidden');
+                document.getElementById('bkdTableBody').innerHTML = '<tr><td colspan="3" class="p-8 text-center text-gray-400 italic">Lengkapi data Max dan e untuk kalkulasi BKD</td></tr>';
+                document.getElementById('bkdNote').classList.add('hidden');
                 return;
             }
 
@@ -172,30 +186,56 @@
             let minLoad = 0;
             let isValidSpec = true;
 
-            // Logika Penentuan Kelas ST 240/2023
-            if (e >= 0.001 && n >= 50000) {
-                kelas = "I"; minLoad = 100 * e;
-            } else if (e >= 0.001 && e <= 0.05) {
-                if (n >= 100 && n <= 100000) { kelas = "II"; minLoad = 20 * e; }
-                else { kelas = "TIDAK STANDAR"; isValidSpec = false; }
-            } else if (e >= 0.1) {
-                if (n >= 5000 && n <= 100000) { kelas = "II"; minLoad = 50 * e; } 
-                else if (n >= 100 && n <= 10000) { 
-                    kelas = "III"; minLoad = 20 * e;
-                    if (e >= 5 && n < 500) { kelas = "TIDAK STANDAR"; isValidSpec = false; }
-                }
-                else if (n >= 100 && n <= 1000) { kelas = "IIII"; minLoad = 10 * e; }
-                else { kelas = "TIDAK STANDAR"; isValidSpec = false; }
-            } else {
-                kelas = "TIDAK STANDAR"; isValidSpec = false;
+            /**
+             * LOGIKA PENENTUAN KELAS BERDASARKAN TABEL 4.1 ST 240/2023
+             * Dengan prioritas: Jika memenuhi Kelas I dan II, pilih Kelas II (lebih rendah).
+             */
+            
+            // 1. Cek Kriteria Kelas II Terlebih Dahulu (Prioritas Rendah)
+            if (e >= 0.001 && e <= 0.05 && n >= 100 && n <= 100000) {
+                kelas = "II";
+                minLoad = 20 * e;
+            } else if (e >= 0.1 && n >= 5000 && n <= 100000) {
+                kelas = "II";
+                minLoad = 50 * e;
+            }
+            // 2. Cek Kriteria Kelas I (Jika tidak masuk Kelas II namun masuk spek Kelas I)
+            else if (e >= 0.001 && n >= 50000) {
+                kelas = "I";
+                minLoad = 100 * e;
+            }
+            // 3. Cek Kriteria Kelas III
+            else if (e >= 0.1 && e <= 2 && n >= 100 && n <= 10000) {
+                kelas = "III";
+                minLoad = 20 * e;
+            } else if (e >= 5 && n >= 500 && n <= 10000) {
+                kelas = "III";
+                minLoad = 20 * e;
+            }
+            // 4. Cek Kriteria Kelas IIII
+            else if (e >= 5 && n >= 100 && n <= 1000) {
+                kelas = "IIII";
+                minLoad = 10 * e;
+            }
+            // 5. Diluar Standar
+            else {
+                kelas = "TIDAK STANDAR";
+                isValidSpec = false;
             }
 
             document.getElementById('tboClass').innerText = kelas;
-            document.getElementById('minLoad').innerText = minLoad.toFixed(6).replace(/\.?0+$/, "");
+            document.getElementById('minLoad').innerText = minLoad.toFixed(6).replace(/\.?0+$/, "") + "";
             
             const spekStatus = document.getElementById('spekStatus');
-            spekStatus.innerText = isValidSpec ? "SESUAI ST" : "TIDAK SESUAI";
-            spekStatus.className = isValidSpec ? "text-sm font-bold text-green-600" : "text-sm font-bold text-red-600";
+            if (isValidSpec) {
+                spekStatus.innerText = "SESUAI ST";
+                spekStatus.className = "text-sm font-bold text-green-600";
+                document.getElementById('bkdNote').classList.remove('hidden');
+            } else {
+                spekStatus.innerText = "TIDAK SESUAI";
+                spekStatus.className = "text-sm font-bold text-red-600";
+                document.getElementById('bkdNote').classList.add('hidden');
+            }
 
             generateBKDTable(e, n, kegiatan, kelas);
             updateDecision();
@@ -203,60 +243,78 @@
 
         function generateBKDTable(e, n, kegiatan, kelas) {
             let html = '';
-            const f = (kegiatan === 'tera') ? 1 : 2;
-            let m1, m2;
+            const factor = (kegiatan === 'tera') ? 1 : 2;
 
-            if(kelas === "I") { m1 = 50000; m2 = 200000; }
-            else if(kelas === "II") { m1 = 5000; m2 = 20000; }
-            else if(kelas === "III") { m1 = 500; m2 = 2000; }
-            else if(kelas === "IIII") { m1 = 50; m2 = 200; }
-            else { 
-                document.getElementById('bkdTableBody').innerHTML = '<tr><td colspan="3" class="p-4 text-center text-red-400">Kelas tidak valid.</td></tr>';
-                return;
+            let m1, m2;
+            switch(kelas) {
+                case "I": m1 = 50000; m2 = 200000; break;
+                case "II": m1 = 5000; m2 = 20000; break;
+                case "III": m1 = 500; m2 = 2000; break;
+                case "IIII": m1 = 50; m2 = 200; break;
+                default:
+                    document.getElementById('bkdTableBody').innerHTML = '<tr><td colspan="3" class="p-8 text-center text-red-400 italic">Spesifikasi tidak masuk dalam range Kelas I, II, III, atau IIII</td></tr>';
+                    return;
             }
 
             const ranges = [
-                { s: 0, end: m1, bkd: 0.5 * f },
-                { s: m1, end: m2, bkd: 1.0 * f },
-                { s: m2, end: Infinity, bkd: 1.5 * f }
+                { start: 0, end: m1, bkd: 0.5 * factor },
+                { start: m1, end: m2, bkd: 1.0 * factor },
+                { start: m2, end: Infinity, bkd: 1.5 * factor }
             ];
 
-            ranges.forEach(r => {
-                if (r.s < n) {
-                    let u = Math.min(r.end, n);
-                    html += `<tr><td class="p-3 border">${r.s}e < m ≤ ${u}e</td><td class="p-3 border text-center">±${r.bkd}e</td><td class="p-3 border text-right font-bold">±${(r.bkd * e).toFixed(6).replace(/\.?0+$/, "")}</td></tr>`;
-                    if (r.end >= n) return;
+            ranges.forEach((r) => {
+                if (r.start < n) {
+                    let displayEnd = Math.min(r.end, n);
+                    let startLabel = (r.start === 0) ? "0" : `(${(r.start * e).toFixed(6).replace(/\.?0+$/, "")})`;
+                    let endLabel = `(${(displayEnd * e).toFixed(6).replace(/\.?0+$/, "")})`;
+                    
+                    html += `
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="p-3 pl-6 border-b border-gray-100 font-medium">
+                                <span class="text-blue-700">${r.start}e</span> < m ≤ <span class="text-blue-700">${displayEnd}e</span>
+                                <div class="text-[10px] text-gray-400 font-normal italic">${startLabel} < m ≤ ${endLabel}</div>
+                            </td>
+                            <td class="p-3 border-b border-gray-100 text-center font-semibold text-gray-700">± ${r.bkd} e</td>
+                            <td class="p-3 pr-6 border-b border-gray-100 text-right font-bold text-blue-900">± ${(r.bkd * e).toFixed(6).replace(/\.?0+$/, "")}</td>
+                        </tr>
+                    `;
+                    if (r.end >= n) return; 
                 }
             });
+
             document.getElementById('bkdTableBody').innerHTML = html;
         }
 
         function updateDecision() {
             const checks = document.querySelectorAll('.uji-check');
-            const isSpecOk = document.getElementById('tboClass').innerText !== "-" && document.getElementById('tboClass').innerText !== "TIDAK STANDAR";
+            const max = document.getElementById('maxCap').value;
+            const e = document.getElementById('eVal').value;
+            const tboClass = document.getElementById('tboClass').innerText;
+            
             let allChecked = true;
             checks.forEach(c => { if (!c.checked) allChecked = false; });
 
+            const isSpecOk = (max && e && tboClass !== "TIDAK STANDAR" && tboClass !== "-");
+
             const box = document.getElementById('decisionBox');
             const text = document.getElementById('decisionText');
-            
-            if (allChecked && isSpecOk) {
-                box.className = "card border-2 text-center status-sah";
-                text.innerText = "SAH";
-            } else {
-                box.className = "card border-2 text-center status-batal";
-                text.innerText = "BATAL";
-            }
-        }
+            const note = document.getElementById('decisionNote');
 
-        function saveAsImage() {
-            const area = document.getElementById('capture-area');
-            html2canvas(area).then(canvas => {
-                const link = document.createElement('a');
-                link.download = 'Laporan-TBO-Sidoarjo.png';
-                link.href = canvas.toDataURL();
-                link.click();
-            });
+            if (allChecked && isSpecOk) {
+                box.className = "card border-2 text-center transition-all duration-500 status-sah border-green-500 shadow-lg scale-105";
+                text.innerText = "SAH";
+                text.className = "text-5xl font-black text-green-700";
+                note.innerText = "UTTP memenuhi syarat teknis dan metrologis (ST 240/2023).";
+            } else {
+                box.className = "card border-2 text-center transition-all duration-500 status-batal border-red-200";
+                text.innerText = "BATAL";
+                text.className = "text-4xl font-black text-red-700";
+                if (!isSpecOk && max && e) {
+                    note.innerText = "Rasio n (" + Math.round(max/e) + ") tidak memenuhi persyaratan kelas timbangan.";
+                } else {
+                    note.innerText = "Pastikan semua spesifikasi benar dan semua pengujian dicentang.";
+                }
+            }
         }
     </script>
 </body>
