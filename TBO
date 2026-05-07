@@ -1,0 +1,265 @@
+```html
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator TBO - ST 240/2023</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .card { @apply bg-white p-4 md:p-6 rounded-xl shadow-md border border-gray-100; }
+        .input-group { @apply mb-4; }
+        .label { @apply block text-sm font-semibold text-gray-700 mb-1; }
+        .input { @apply w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none; }
+        .status-sah { @apply bg-green-100 text-green-800 border-green-200; }
+        .status-batal { @apply bg-red-100 text-red-800 border-red-200; }
+        @media print {
+            .no-print { display: none; }
+            .card { box-shadow: none; border: 1px solid #ddd; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen pb-20">
+
+    <nav class="bg-blue-800 text-white p-4 shadow-lg sticky top-0 z-50 no-print">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <h1 class="text-xl font-bold uppercase tracking-tight">Tools Penera Sidoarjo</h1>
+            </div>
+            <div class="text-right">
+                <p class="text-[10px] opacity-75">Sesuai ST 240/2023</p>
+                <p class="text-xs font-bold">Adib Nur Ikhwan</p>
+            </div>
+        </div>
+    </nav>
+
+    <div id="capture-area" class="max-w-4xl mx-auto p-4 space-y-6">
+        
+        <!-- Header Laporan (Hanya muncul saat print/save) -->
+        <div class="hidden print:block text-center border-b-2 border-black pb-4 mb-6">
+            <h2 class="text-xl font-bold">LAPORAN HASIL PENGUJIAN TBO</h2>
+            <p>Metrologi Legal Kabupaten Sidoarjo</p>
+        </div>
+
+        <!-- Section 1: Spesifikasi -->
+        <section class="card">
+            <h2 class="text-lg font-bold mb-4 text-blue-900 flex items-center">
+                Spesifikasi Alat
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="input-group">
+                    <label class="label">Kapasitas Maksimum (Max)</label>
+                    <input type="number" id="maxCap" class="input" placeholder="Misal: 30" oninput="calculate()">
+                </div>
+                <div class="input-group">
+                    <label class="label">Interval Verifikasi (e)</label>
+                    <input type="number" id="eVal" class="input" placeholder="Misal: 0.01" step="0.000001" oninput="calculate()">
+                </div>
+                <div class="input-group">
+                    <label class="label">Jenis Kegiatan</label>
+                    <select id="kegiatan" class="input" onchange="calculate()">
+                        <option value="tera">Tera</option>
+                        <option value="tera_ulang">Tera Ulang</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div id="classResult" class="mt-4 p-4 rounded-xl bg-blue-50 border border-blue-200 hidden">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                    <div>
+                        <p class="text-[10px] text-blue-600 font-bold uppercase">n (Max/e)</p>
+                        <p id="nValue" class="text-xl font-bold text-blue-900">-</p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] text-blue-600 font-bold uppercase">Kelas</p>
+                        <p id="tboClass" class="text-xl font-bold text-blue-900">-</p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] text-blue-600 font-bold uppercase">Min</p>
+                        <p id="minLoad" class="text-xl font-bold text-blue-900">-</p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] text-blue-600 font-bold uppercase">Status ST</p>
+                        <p id="spekStatus" class="text-sm font-bold">-</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Tabel BKD -->
+        <section class="card overflow-hidden">
+            <h2 class="text-lg font-bold mb-4 text-blue-900">Penentuan BKD (Tabel 4.7)</h2>
+            <div class="overflow-x-auto -mx-4 md:-mx-6">
+                <table class="w-full text-xs md:text-sm text-left border-collapse">
+                    <thead>
+                        <tr class="bg-gray-100">
+                            <th class="p-3 pl-6 border">Rentang Muatan (m)</th>
+                            <th class="p-3 border text-center">BKD (e)</th>
+                            <th class="p-3 pr-6 border text-right">BKD (Satuan)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bkdTableBody">
+                        <tr><td colspan="3" class="p-8 text-center text-gray-400 italic">Data belum lengkap.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Section 3: Checklist -->
+        <section class="card no-print">
+            <h2 class="text-lg font-bold mb-4 text-blue-900">Checklist Hasil Pengujian</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="space-y-2">
+                    <label class="flex items-center space-x-3 p-2 bg-gray-50 rounded cursor-pointer">
+                        <input type="checkbox" class="uji-check w-5 h-5" onchange="updateDecision()">
+                        <span class="text-sm">Administrasi & Izin Tipe</span>
+                    </label>
+                    <label class="flex items-center space-x-3 p-2 bg-gray-50 rounded cursor-pointer">
+                        <input type="checkbox" class="uji-check w-5 h-5" onchange="updateDecision()">
+                        <span class="text-sm">Pemeriksaan Fisik / Label</span>
+                    </label>
+                </div>
+                <div class="space-y-2">
+                    <label class="flex items-center space-x-3 p-2 bg-gray-50 rounded cursor-pointer">
+                        <input type="checkbox" class="uji-check w-5 h-5" onchange="updateDecision()">
+                        <span class="text-sm">Uji Kebenaran & Sudut</span>
+                    </label>
+                    <label class="flex items-center space-x-3 p-2 bg-gray-50 rounded cursor-pointer">
+                        <input type="checkbox" class="uji-check w-5 h-5" onchange="updateDecision()">
+                        <span class="text-sm">Uji Repeatability</span>
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Decision Box -->
+        <div id="decisionBox" class="card border-2 text-center status-batal">
+            <h3 id="decisionText" class="text-4xl font-black">BATAL</h3>
+            <p id="decisionNote" class="text-xs mt-2 italic text-gray-600">Lengkapi data dan centang pengujian.</p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 no-print">
+            <button onclick="window.print()" class="bg-blue-600 text-white font-bold py-3 rounded-lg shadow-md hover:bg-blue-700">
+                Cetak Laporan
+            </button>
+            <button onclick="saveAsImage()" class="bg-green-600 text-white font-bold py-3 rounded-lg shadow-md hover:bg-green-700">
+                Simpan Gambar
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        function calculate() {
+            const max = parseFloat(document.getElementById('maxCap').value);
+            const e = parseFloat(document.getElementById('eVal').value);
+            const kegiatan = document.getElementById('kegiatan').value;
+            const resDiv = document.getElementById('classResult');
+            
+            if (!max || !e || max <= 0 || e <= 0) {
+                resDiv.classList.add('hidden');
+                return;
+            }
+
+            resDiv.classList.remove('hidden');
+            const n = max / e;
+            document.getElementById('nValue').innerText = Math.round(n).toLocaleString();
+
+            let kelas = "-";
+            let minLoad = 0;
+            let isValidSpec = true;
+
+            // Logika Penentuan Kelas ST 240/2023
+            if (e >= 0.001 && n >= 50000) {
+                kelas = "I"; minLoad = 100 * e;
+            } else if (e >= 0.001 && e <= 0.05) {
+                if (n >= 100 && n <= 100000) { kelas = "II"; minLoad = 20 * e; }
+                else { kelas = "TIDAK STANDAR"; isValidSpec = false; }
+            } else if (e >= 0.1) {
+                if (n >= 5000 && n <= 100000) { kelas = "II"; minLoad = 50 * e; } 
+                else if (n >= 100 && n <= 10000) { 
+                    kelas = "III"; minLoad = 20 * e;
+                    if (e >= 5 && n < 500) { kelas = "TIDAK STANDAR"; isValidSpec = false; }
+                }
+                else if (n >= 100 && n <= 1000) { kelas = "IIII"; minLoad = 10 * e; }
+                else { kelas = "TIDAK STANDAR"; isValidSpec = false; }
+            } else {
+                kelas = "TIDAK STANDAR"; isValidSpec = false;
+            }
+
+            document.getElementById('tboClass').innerText = kelas;
+            document.getElementById('minLoad').innerText = minLoad.toFixed(6).replace(/\.?0+$/, "");
+            
+            const spekStatus = document.getElementById('spekStatus');
+            spekStatus.innerText = isValidSpec ? "SESUAI ST" : "TIDAK SESUAI";
+            spekStatus.className = isValidSpec ? "text-sm font-bold text-green-600" : "text-sm font-bold text-red-600";
+
+            generateBKDTable(e, n, kegiatan, kelas);
+            updateDecision();
+        }
+
+        function generateBKDTable(e, n, kegiatan, kelas) {
+            let html = '';
+            const f = (kegiatan === 'tera') ? 1 : 2;
+            let m1, m2;
+
+            if(kelas === "I") { m1 = 50000; m2 = 200000; }
+            else if(kelas === "II") { m1 = 5000; m2 = 20000; }
+            else if(kelas === "III") { m1 = 500; m2 = 2000; }
+            else if(kelas === "IIII") { m1 = 50; m2 = 200; }
+            else { 
+                document.getElementById('bkdTableBody').innerHTML = '<tr><td colspan="3" class="p-4 text-center text-red-400">Kelas tidak valid.</td></tr>';
+                return;
+            }
+
+            const ranges = [
+                { s: 0, end: m1, bkd: 0.5 * f },
+                { s: m1, end: m2, bkd: 1.0 * f },
+                { s: m2, end: Infinity, bkd: 1.5 * f }
+            ];
+
+            ranges.forEach(r => {
+                if (r.s < n) {
+                    let u = Math.min(r.end, n);
+                    html += `<tr><td class="p-3 border">${r.s}e < m ≤ ${u}e</td><td class="p-3 border text-center">±${r.bkd}e</td><td class="p-3 border text-right font-bold">±${(r.bkd * e).toFixed(6).replace(/\.?0+$/, "")}</td></tr>`;
+                    if (r.end >= n) return;
+                }
+            });
+            document.getElementById('bkdTableBody').innerHTML = html;
+        }
+
+        function updateDecision() {
+            const checks = document.querySelectorAll('.uji-check');
+            const isSpecOk = document.getElementById('tboClass').innerText !== "-" && document.getElementById('tboClass').innerText !== "TIDAK STANDAR";
+            let allChecked = true;
+            checks.forEach(c => { if (!c.checked) allChecked = false; });
+
+            const box = document.getElementById('decisionBox');
+            const text = document.getElementById('decisionText');
+            
+            if (allChecked && isSpecOk) {
+                box.className = "card border-2 text-center status-sah";
+                text.innerText = "SAH";
+            } else {
+                box.className = "card border-2 text-center status-batal";
+                text.innerText = "BATAL";
+            }
+        }
+
+        function saveAsImage() {
+            const area = document.getElementById('capture-area');
+            html2canvas(area).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'Laporan-TBO-Sidoarjo.png';
+                link.href = canvas.toDataURL();
+                link.click();
+            });
+        }
+    </script>
+</body>
+</html>
+
+```
